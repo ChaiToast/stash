@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STASH — Turn your Instagram saves into a searchable library</title>
+  <meta name="description" content="STASH is a Chrome extension that turns your Instagram saved posts into a searchable, AI-organized personal library." />
+  <style>
+    :root {
+      --bg: #0b0b10;
+      --bg-raised: #14141c;
+      --border: #24242f;
+      --text: #f2f2f7;
+      --muted: #9a9aa8;
+      --accent: #f43f5e;
+      --accent-2: #d946ef;
+      --gradient: linear-gradient(135deg, #f43f5e 0%, #d946ef 100%);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    nav {
+      position: sticky; top: 0; z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(11, 11, 16, 0.8);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .container { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .logo { font-weight: 800; font-size: 20px; letter-spacing: 0.08em; }
+    .logo span { background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    nav .links { display: flex; gap: 24px; font-size: 14px; color: var(--muted); }
+    nav .links a { text-decoration: none; transition: color 0.15s; }
+    nav .links a:hover { color: var(--text); }
+    .hero { text-align: center; padding: 96px 0 72px; }
+    .hero h1 { font-size: clamp(36px, 6vw, 58px); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
+    .hero h1 .grad { background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .hero p.sub { max-width: 620px; margin: 20px auto 0; color: var(--muted); font-size: 19px; }
+    .cta-row { display: flex; gap: 16px; justify-content: center; margin-top: 40px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 28px; border-radius: 12px; font-weight: 600; font-size: 16px;
+      text-decoration: none; transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: var(--gradient); color: #fff; box-shadow: 0 8px 30px rgba(244, 63, 94, 0.35); }
+    .btn-secondary { background: var(--bg-raised); border: 1px solid var(--border); color: var(--text); }
+    .badge {
+      display: inline-block; padding: 6px 14px; border-radius: 999px;
+      border: 1px solid var(--border); background: var(--bg-raised);
+      font-size: 13px; color: var(--muted); margin-bottom: 24px;
+    }
+    section { padding: 64px 0; }
+    section h2 { font-size: 30px; font-weight: 700; margin-bottom: 8px; text-align: center; }
+    section .section-sub { text-align: center; color: var(--muted); margin-bottom: 40px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .card {
+      background: var(--bg-raised); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px;
+    }
+    .card .emoji { font-size: 28px; margin-bottom: 14px; }
+    .card h3 { font-size: 17px; margin-bottom: 8px; }
+    .card p { color: var(--muted); font-size: 15px; }
+    ol.steps { counter-reset: step; list-style: none; max-width: 640px; margin: 0 auto; }
+    ol.steps li {
+      counter-increment: step; position: relative;
+      background: var(--bg-raised); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px 20px 20px 72px; margin-bottom: 14px;
+    }
+    ol.steps li::before {
+      content: counter(step);
+      position: absolute; left: 20px; top: 20px;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: var(--gradient); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 16px;
+    }
+    ol.steps li strong { display: block; margin-bottom: 4px; }
+    ol.steps li p { color: var(--muted); font-size: 14.5px; }
+    code {
+      background: #1d1d27; border: 1px solid var(--border);
+      padding: 2px 7px; border-radius: 6px; font-size: 13.5px;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace; color: #f0abfc;
+    }
+    pre {
+      background: #1d1d27; border: 1px solid var(--border); border-radius: 12px;
+      padding: 18px 20px; overflow-x: auto; margin: 16px auto; max-width: 640px;
+      font-size: 13.5px; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      color: #e9c46a;
+    }
+    .note {
+      max-width: 640px; margin: 24px auto 0; padding: 16px 20px;
+      background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.25);
+      border-radius: 12px; font-size: 14.5px; color: var(--muted);
+    }
+    footer { border-top: 1px solid var(--border); padding: 32px 0; text-align: center; color: var(--muted); font-size: 14px; }
+    footer a { color: var(--muted); }
+    footer a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="container">
+      <div class="logo">ST<span>ASH</span> ✨</div>
+      <div class="links">
+        <a href="#features">Features</a>
+        <a href="#install">Install</a>
+        <a href="#requirements">Requirements</a>
+        <a href="https://github.com/chaitoast/stash" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <span class="badge">Open source · Chrome Extension (MV3)</span>
+      <h1>Turn your Instagram saves into a<br /><span class="grad">searchable personal library</span></h1>
+      <p class="sub">
+        You save posts. You never find them again. STASH syncs your Instagram saved posts to your
+        own dashboard, classifies them with AI into 9 categories, and makes every recipe, workout,
+        and idea searchable in seconds.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/chaitoast/stash/releases/latest/download/stash-extension.zip" download>
+          ⬇ Download STASH Extension
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/chaitoast/stash" target="_blank" rel="noopener">
+          ⭐ View on GitHub
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section id="features">
+    <div class="container">
+      <h2>What STASH does</h2>
+      <p class="section-sub">One click sync. AI does the filing. You do the finding.</p>
+      <div class="grid">
+        <div class="card">
+          <div class="emoji">📥</div>
+          <h3>One-click sync</h3>
+          <p>Gathers every post from your Instagram Saved folder straight out of Chrome — no manual copying.</p>
+        </div>
+        <div class="card">
+          <div class="emoji">🤖</div>
+          <h3>AI classification</h3>
+          <p>Each save is automatically sorted into 9 categories: recipes, workouts, home, style, gifts, and more.</p>
+        </div>
+        <div class="card">
+          <div class="emoji">🔍</div>
+          <h3>Searchable library</h3>
+          <p>Your Library dashboard with per-category vaults, filters, and global search across everything you've saved.</p>
+        </div>
+        <div class="card">
+          <div class="emoji">🔥</div>
+          <h3>Streaks & progress</h3>
+          <p>Mark posts as done, build streaks, watch completion bars fill up. Actually use what you save.</p>
+        </div>
+        <div class="card">
+          <div class="emoji">🌙</div>
+          <h3>Private by design</h3>
+          <p>Runs on your own Supabase project. Your saves, your database, your keys.</p>
+        </div>
+        <div class="card">
+          <div class="emoji">📤</div>
+          <h3>Export & share</h3>
+          <p>Export to CSV/JSON and publish public collections you can share with a link.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="container">
+      <h2>Install in 4 steps</h2>
+      <p class="section-sub">The extension is not on the Chrome Web Store yet, so Chrome installs it in developer mode. Takes under a minute.</p>
+      <ol class="steps">
+        <li>
+          <strong>Download the extension</strong>
+          <p>Grab <a href="https://github.com/chaitoast/stash/releases/latest/download/stash-extension.zip" download><code>stash-extension.zip</code></a> from the latest GitHub Release, then unzip it.</p>
+        </li>
+        <li>
+          <strong>Open the Chrome extensions page</strong>
+          <p>Visit <code>chrome://extensions</code> and turn on <strong>Developer mode</strong> (top-right toggle).</p>
+        </li>
+        <li>
+          <strong>Load STASH</strong>
+          <p>Click <strong>Load unpacked</strong> and select the unzipped folder — the one containing <code>manifest.json</code>. The STASH icon appears in your toolbar.</p>
+        </li>
+        <li>
+          <strong>Start your first sync</strong>
+          <p>Open your Instagram <em>Saved</em> page in Chrome, click the STASH icon, and hit <strong>Start Sync</strong>. Posts upload and appear in your library, sorted by category.</p>
+        </li>
+      </ol>
+      <div class="note">
+        💡 If Chrome asks you to re-enable the extension after an update, just repeat steps 2–3 with the new folder — your data lives in your dashboard, not the extension.
+      </div>
+    </div>
+  </section>
+
+  <section id="requirements">
+    <div class="container">
+      <h2>Before your first sync</h2>
+      <p class="section-sub">The extension needs a STASH dashboard to sync into. Options:</p>
+      <div class="grid">
+        <div class="card">
+          <div class="emoji">🚀</div>
+          <h3>Use the hosted dashboard</h3>
+          <p>If the author shared a dashboard URL with you, connect the extension from <strong>Settings → Connect STASH Extension</strong> and start syncing.</p>
+        </div>
+        <div class="card">
+          <div class="emoji">🛠</div>
+          <h3>Self-host (free tiers)</h3>
+          <p>Clone the repo and run your own backend on Supabase's free tier + your Anthropic API key. Full setup guide is in the <a href="https://github.com/chaitoast/stash#readme" target="_blank" rel="noopener">repo README</a>.</p>
+        </div>
+      </div>
+      <pre># Self-host quick start
+git clone https://github.com/chaitoast/stash.git
+cd stash && npm install
+npm run db:start && npm run db:reset
+npm run dev --workspace=@stash/web</pre>
+    </div>
+  </section>
+
+  <section style="padding-bottom: 96px;">
+    <div class="container" style="text-align:center;">
+      <h2>Ready to rescue your saves?</h2>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/chaitoast/stash/releases/latest/download/stash-extension.zip" download>
+          ⬇ Download STASH Extension
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      STASH — Instagram saves → searchable library ·
+      <a href="https://github.com/chaitoast/stash" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="https://github.com/chaitoast/stash/issues" target="_blank" rel="noopener">Report an issue</a>
+      <br /><br />Built with Chrome MV3 · Supabase · Claude
+    </div>
+  </footer>
+</body>
+</html>

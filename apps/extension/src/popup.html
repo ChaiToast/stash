@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>STASH</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="popup">
+      <header class="header">
+        <div class="brand">
+          <span class="brand-mark">S</span>
+          <div>
+            <h1>STASH</h1>
+            <p>Your saved posts, made useful.</p>
+          </div>
+        </div>
+      </header>
+
+      <section class="status-card">
+        <div class="status-row">
+          <span class="label">Status</span>
+          <span id="sync-status" class="status-pill status-idle">Idle</span>
+        </div>
+        <div class="status-row">
+          <span class="label">Posts found</span>
+          <strong id="posts-found">0</strong>
+        </div>
+        <div class="progress-block">
+          <div class="progress-labels">
+            <span id="progress-label">Ready to sync</span>
+            <span id="progress-percent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="progress-bar" class="progress-bar"></div>
+          </div>
+        </div>
+        <p id="sync-message" class="sync-message">
+          Open Instagram Saved, then start a sync.
+        </p>
+        <p id="sync-error" class="sync-error hidden"></p>
+      </section>
+
+      <section class="actions">
+        <button id="sync-button" class="button button-primary" type="button">
+          Start Sync
+        </button>
+        <button id="dashboard-button" class="button button-secondary" type="button">
+          Open Dashboard
+        </button>
+      </section>
+
+      <details class="auth-panel">
+        <summary>Account connection</summary>
+        <p class="hint">
+          Paste your Supabase session details after signing in on the dashboard.
+          Full OAuth bridge arrives in Phase 4.
+        </p>
+        <label>
+          Supabase URL
+          <input id="supabase-url" type="url" placeholder="http://127.0.0.1:54321" />
+        </label>
+        <label>
+          User ID
+          <input id="user-id" type="text" placeholder="uuid" />
+        </label>
+        <label>
+          Access token
+          <input id="access-token" type="password" placeholder="eyJ..." />
+        </label>
+        <button id="save-auth-button" class="button button-secondary" type="button">
+          Save connection
+        </button>
+      </details>
+
+      <footer class="footer">
+        <span id="last-sync">Never synced</span>
+      </footer>
+    </main>
+    <script type="module" src="popup.ts"></script>
+  </body>
+</html>

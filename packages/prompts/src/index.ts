@@ -1,0 +1,15 @@
+export {
+  applyConfidenceGate,
+  buildClassificationUserPrompt,
+  CATEGORY_SCHEMAS,
+  CLAUDE_HAIKU_MODEL,
+  CLASSIFICATION_SYSTEM_PROMPT,
+  CONFIDENCE_THRESHOLD,
+  extractJsonPayload,
+  fallbackClassificationResults,
+  isPostCategory,
+  normalizeClassificationResponse,
+  type ClassificationInputPost,
+  type ClassificationResponse,
+  type ClassificationResult,
+} from "./classify";
