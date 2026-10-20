@@ -38,3 +38,4 @@ npm-debug.log*
 
 # Extension
 apps/extension/*.zip
+/*.zip
